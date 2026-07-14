@@ -13,30 +13,39 @@ npx -y http-server -p 8642 -c-1
 
 then open <http://localhost:8642>. (Any static file server works.)
 
-## Edit the captions
+## Manage the collection (easiest way)
 
-Open `index.html` and find the `works` array near the bottom of the file:
+Open **`admin.html`** on the live site (or locally) — the ✎ link in the site
+footer takes you there. Unlock it with a GitHub fine-grained personal access
+token (instructions are on the page itself). From there you can:
 
-```js
-const works = [
-  { src: 'images/subject-1.jpg', title: 'Subject 1' },
-  ...
-];
+- upload a new artwork with a caption (the image is resized and flattened onto
+  a white background automatically, right in the browser),
+- rename captions, reorder works, or remove them.
+
+Every action is a commit to this repository, and GitHub Pages republishes the
+site automatically about a minute later.
+
+## Edit the captions by hand
+
+Captions live in `works.json` — one entry per artwork, in display order:
+
+```json
+{ "src": "images/subject-1.jpg", "title": "Subject 1" }
 ```
 
-Change each `title` to the caption you want shown under the artwork. The order
-of the array is the display order and the order of the lightbox navigation.
+Edit, commit, push.
 
-## Add or replace artworks
+## Add artworks by hand
 
 Originals live in `artimages/` (kept out of git — they are ~12 MB each). To
-regenerate a web-sized copy:
+generate a web-sized copy:
 
 ```sh
 sips -Z 1600 -s format jpeg -s formatOptions 82 "artimages/NAME.png" --out "images/name.jpg"
 ```
 
-then add an entry for it to the `works` array.
+then add an entry for it to `works.json`.
 
 ## Publish on GitHub Pages
 

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Gallery — Manage collection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #faf7f0;
+    --ink: #2b2620;
+    --ink-soft: #6f665a;
+    --accent: #c0392b;
+    --line: #e0d8c8;
+    --ok: #3f7d4e;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Jost', 'Helvetica Neue', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    padding: 2.5rem 1.2rem 5rem;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  h1 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 500;
+    font-size: 2.2rem;
+    text-align: center;
+  }
+  .sub { text-align: center; color: var(--ink-soft); font-size: 0.9rem; margin-bottom: 2.5rem; }
+  .sub a { color: var(--accent); }
+  h2 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 500;
+    font-size: 1.5rem;
+    margin: 2.6rem 0 0.9rem;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.35rem;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid var(--line);
+    padding: 1.4rem;
+    margin-top: 1rem;
+  }
+  label { display: block; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 0.3rem; }
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    font: inherit;
+    color: var(--ink);
+  }
+  input:focus { outline: 1px solid var(--accent); }
+  button {
+    font: inherit;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    padding: 0.55rem 1.4rem;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    cursor: pointer;
+  }
+  button:hover { background: #000; }
+  button:disabled { opacity: 0.45; cursor: default; }
+  button.quiet {
+    background: none;
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+    padding: 0.3rem 0.7rem;
+    font-size: 0.85rem;
+  }
+  button.quiet:hover { color: var(--accent); border-color: var(--accent); background: none; }
+  .row { display: flex; gap: 0.8rem; align-items: center; margin-top: 1rem; flex-wrap: wrap; }
+  .status { margin-top: 1rem; font-size: 0.95rem; min-height: 1.4em; }
+  .status.ok { color: var(--ok); }
+  .status.err { color: var(--accent); }
+  .work-row {
+    display: flex;
+    gap: 0.9rem;
+    align-items: center;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .work-row:last-child { border-bottom: none; }
+  .work-row img { width: 54px; height: 54px; object-fit: contain; background: #fff; border: 1px solid var(--line); flex-shrink: 0; }
+  .work-row input { flex: 1; }
+  .work-row .btns { display: flex; gap: 0.3rem; flex-shrink: 0; }
+  details { margin-top: 1.2rem; font-size: 0.92rem; color: var(--ink-soft); }
+  details summary { cursor: pointer; color: var(--ink); }
+  details ol { margin: 0.6rem 0 0 1.4rem; }
+  details code { background: #efe9db; padding: 0 0.3em; }
+  .drop {
+    border: 2px dashed var(--line);
+    padding: 1.6rem;
+    text-align: center;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .drop:hover, .drop.over { border-color: var(--accent); }
+  .drop img { max-width: 180px; max-height: 180px; display: block; margin: 0.8rem auto 0; border: 1px solid var(--line); background: #fff; }
+  .hidden { display: none; }
+  .top-links { text-align: center; margin-bottom: 1rem; font-size: 0.9rem; }
+  .top-links a { color: var(--ink-soft); text-decoration: none; }
+  .top-links a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="top-links"><a href="index.html">&larr; Back to the gallery</a></p>
+  <h1>Manage the collection</h1>
+  <p class="sub">Changes are saved to GitHub; the live site updates itself about a minute later.</p>
+
+  <!-- ============ LOGIN ============ -->
+  <div id="loginView" class="card">
+    <label for="tokenInput">Access token</label>
+    <input type="password" id="tokenInput" placeholder="github_pat_…" autocomplete="off">
+    <div class="row">
+      <button id="unlockBtn">Unlock</button>
+      <span class="status" id="loginStatus"></span>
+    </div>
+    <details>
+      <summary>How to create your token (once a year)</summary>
+      <ol>
+        <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank">github.com/settings/personal-access-tokens/new</a> (sign in as <strong>mariabosca</strong>).</li>
+        <li>Token name: <code>gallery</code>. Expiration: <strong>1 year</strong> (the maximum).</li>
+        <li>Repository access: <strong>Only select repositories</strong> &rarr; choose <code>2026exhibi</code>.</li>
+        <li>Permissions &rarr; Repository permissions &rarr; <strong>Contents: Read and write</strong>. Leave everything else alone.</li>
+        <li>Click <strong>Generate token</strong>, copy it (starts with <code>github_pat_</code>) and paste it above. It stays saved in this browser until you sign out.</li>
+      </ol>
+    </details>
+  </div>
+
+  <!-- ============ ADMIN ============ -->
+  <div id="adminView" class="hidden">
+
+    <h2>Add a new artwork</h2>
+    <div class="card">
+      <div class="drop" id="drop">
+        <span id="dropText">Click to choose an image (or drag it here)</span>
+        <img id="preview" class="hidden" alt="">
+      </div>
+      <input type="file" id="fileInput" accept="image/*" class="hidden">
+      <div style="margin-top:1rem">
+        <label for="newTitle">Caption</label>
+        <input type="text" id="newTitle" placeholder="e.g. Papaveri di montagna">
+      </div>
+      <div class="row">
+        <button id="publishBtn" disabled>Publish artwork</button>
+        <span class="status" id="addStatus"></span>
+      </div>
+      <p style="font-size:0.85rem;color:var(--ink-soft);margin-top:0.8rem">
+        The image is automatically resized for the web and placed on a white background — you can choose the original straight from your <code>artimages</code> folder.
+      </p>
+    </div>
+
+    <h2>Captions &amp; order</h2>
+    <div class="card">
+      <div id="workList"></div>
+      <div class="row">
+        <button id="saveBtn">Save changes</button>
+        <span class="status" id="saveStatus"></span>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:2.2rem;justify-content:center">
+      <button class="quiet" id="logoutBtn">Sign out on this browser</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const REPO = 'mariabosca/2026exhibi';
+  const BRANCH = 'main';
+  const API = 'https://api.github.com/repos/' + REPO + '/contents/';
+  const TOKEN_KEY = 'gallery_admin_token';
+
+  let token = localStorage.getItem(TOKEN_KEY) || '';
+  let works = [];
+  let worksSha = '';
+  let pendingImage = null; // { base64, name }
+
+  // ---------- helpers ----------
+  const $ = id => document.getElementById(id);
+
+  const b64encode = str => {
+    const bytes = new TextEncoder().encode(str);
+    let bin = '';
+    bytes.forEach(b => bin += String.fromCharCode(b));
+    return btoa(bin);
+  };
+  const b64decode = str => {
+    const bin = atob(str.replace(/\s/g, ''));
+    return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0)));
+  };
+
+  async function gh(path, opts = {}) {
+    const res = await fetch(API + path, {
+      ...opts,
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    });
+    if (!res.ok) {
+      let msg = 'HTTP ' + res.status;
+      try { msg = (await res.json()).message || msg; } catch (e) {}
+      if (res.status === 401) msg = 'Token not valid (expired?) — create a new one.';
+      if (res.status === 404) msg = 'Not found — check the token has access to ' + REPO + '.';
+      if (res.status === 409) msg = 'Conflict — the file changed elsewhere. Reload this page and retry.';
+      throw new Error(msg);
+    }
+    return res.json();
+  }
+
+  function setStatus(el, msg, cls) {
+    el.textContent = msg;
+    el.className = 'status' + (cls ? ' ' + cls : '');
+  }
+
+  // ---------- data ----------
+  async function loadWorks() {
+    const d = await gh('works.json?ref=' + BRANCH + '&_=' + Date.now());
+    works = JSON.parse(b64decode(d.content));
+    worksSha = d.sha;
+  }
+
+  async function saveWorks(message) {
+    const d = await gh('works.json', {
+      method: 'PUT',
+      body: JSON.stringify({
+        message,
+        content: b64encode(JSON.stringify(works, null, 2) + '\n'),
+        sha: worksSha,
+        branch: BRANCH
+      })
+    });
+    worksSha = d.content.sha;
+  }
+
+  // ---------- login ----------
+  async function unlock() {
+    token = $('tokenInput').value.trim() || token;
+    if (!token) { setStatus($('loginStatus'), 'Paste your token first.', 'err'); return; }
+    setStatus($('loginStatus'), 'Checking…');
+    try {
+      await loadWorks();
+      localStorage.setItem(TOKEN_KEY, token);
+      $('loginView').classList.add('hidden');
+      $('adminView').classList.remove('hidden');
+      renderList();
+    } catch (e) {
+      token = '';
+      setStatus($('loginStatus'), e.message, 'err');
+    }
+  }
+
+  $('unlockBtn').addEventListener('click', unlock);
+  $('tokenInput').addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
+
+  $('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem(TOKEN_KEY);
+    location.reload();
+  });
+
+  if (token) { unlock(); }
+
+  // ---------- caption list ----------
+  function renderList() {
+    const list = $('workList');
+    list.innerHTML = '';
+    works.forEach((w, i) => {
+      const row = document.createElement('div');
+      row.className = 'work-row';
+
+      const img = document.createElement('img');
+      img.src = w.src;
+      img.alt = '';
+      img.onerror = () => { img.style.visibility = 'hidden'; };
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = w.title;
+      input.addEventListener('input', () => { works[i].title = input.value; });
+
+      const btns = document.createElement('div');
+      btns.className = 'btns';
+      const mk = (txt, title, fn) => {
+        const b = document.createElement('button');
+        b.className = 'quiet';
+        b.textContent = txt;
+        b.title = title;
+        b.addEventListener('click', fn);
+        return b;
+      };
+      btns.append(
+        mk('↑', 'Move up', () => { if (i > 0) { [works[i-1], works[i]] = [works[i], works[i-1]]; renderList(); } }),
+        mk('↓', 'Move down', () => { if (i < works.length - 1) { [works[i+1], works[i]] = [works[i], works[i+1]]; renderList(); } }),
+        mk('✕', 'Remove from gallery', () => {
+          if (confirm('Remove “' + w.title + '” from the gallery?\n(The image file stays in the repository.)')) {
+            works.splice(i, 1);
+            renderList();
+          }
+        })
+      );
+
+      row.append(img, input, btns);
+      list.appendChild(row);
+    });
+  }
+
+  $('saveBtn').addEventListener('click', async () => {
+    const btn = $('saveBtn');
+    btn.disabled = true;
+    setStatus($('saveStatus'), 'Saving…');
+    try {
+      await saveWorks('Update captions / order');
+      setStatus($('saveStatus'), 'Saved ✓ — live in about a minute.', 'ok');
+    } catch (e) {
+      setStatus($('saveStatus'), e.message, 'err');
+    }
+    btn.disabled = false;
+  });
+
+  // ---------- add artwork ----------
+  const drop = $('drop');
+  const fileInput = $('fileInput');
+
+  drop.addEventListener('click', () => fileInput.click());
+  drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+  drop.addEventListener('drop', e => {
+    e.preventDefault();
+    drop.classList.remove('over');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', () => { if (fileInput.files[0]) handleFile(fileInput.files[0]); });
+
+  function handleFile(file) {
+    setStatus($('addStatus'), 'Preparing image…');
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 1600;
+      const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * scale);
+      c.height = Math.round(img.height * scale);
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff';                       // white background under any transparency
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      const dataUrl = c.toDataURL('image/jpeg', 0.85);
+      pendingImage = { base64: dataUrl.split(',')[1] };
+      $('preview').src = dataUrl;
+      $('preview').classList.remove('hidden');
+      $('dropText').textContent = file.name + ' — ready';
+      $('publishBtn').disabled = false;
+      setStatus($('addStatus'), '');
+      URL.revokeObjectURL(img.src);
+    };
+    img.onerror = () => setStatus($('addStatus'), 'Could not read that file — is it an image?', 'err');
+    img.src = URL.createObjectURL(file);
+  }
+
+  function slugify(t) {
+    const s = t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    return s || 'artwork';
+  }
+
+  function uniquePath(slug) {
+    let path = 'images/' + slug + '.jpg', n = 2;
+    while (works.some(w => w.src === path)) path = 'images/' + slug + '-' + (n++) + '.jpg';
+    return path;
+  }
+
+  $('publishBtn').addEventListener('click', async () => {
+    const title = $('newTitle').value.trim();
+    if (!title) { setStatus($('addStatus'), 'Give it a caption first.', 'err'); return; }
+    if (!pendingImage) { setStatus($('addStatus'), 'Choose an image first.', 'err'); return; }
+    const btn = $('publishBtn');
+    btn.disabled = true;
+    const path = uniquePath(slugify(title));
+    try {
+      setStatus($('addStatus'), 'Uploading image…');
+      await gh(path, {
+        method: 'PUT',
+        body: JSON.stringify({ message: 'Add artwork: ' + title, content: pendingImage.base64, branch: BRANCH })
+      });
+      setStatus($('addStatus'), 'Updating the collection…');
+      works.push({ src: path, title });
+      await saveWorks('Add "' + title + '" to the gallery');
+      renderList();
+      pendingImage = null;
+      $('newTitle').value = '';
+      $('preview').classList.add('hidden');
+      $('dropText').textContent = 'Click to choose an image (or drag it here)';
+      setStatus($('addStatus'), 'Published ✓ — live in about a minute.', 'ok');
+    } catch (e) {
+      // roll back the local push if saving works.json failed
+      works = works.filter(w => w.src !== path || w.title !== title);
+      setStatus($('addStatus'), e.message, 'err');
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>

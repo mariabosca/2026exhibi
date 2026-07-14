@@ -275,7 +275,7 @@
 
 <main class="gallery" id="gallery"></main>
 
-<footer>Summer Art Residency 2026</footer>
+<footer>Summer Art Residency 2026 <a href="admin.html" style="color:inherit;text-decoration:none;opacity:0.45" title="Manage the collection">✎</a></footer>
 
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Artwork viewer">
   <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
@@ -291,39 +291,12 @@
 </div>
 
 <script>
-  // ------------------------------------------------------------------
-  // EDIT YOUR TITLES HERE — one entry per artwork, in display order.
-  // ------------------------------------------------------------------
-  const works = [
-    { src: 'images/subject-1.jpg', title: 'Subject 1' },
-    { src: 'images/subject-2.jpg', title: 'Subject 2' },
-    { src: 'images/subject-3.jpg', title: 'Subject 3' },
-    { src: 'images/subject-4.jpg', title: 'Subject 4' },
-    { src: 'images/subject-5.jpg', title: 'Subject 5' },
-    { src: 'images/subject-6.jpg', title: 'Subject 6' },
-    { src: 'images/subject-7.jpg', title: 'Subject 7' },
-    { src: 'images/subject-8.jpg', title: 'Subject 8' },
-    { src: 'images/subject-9.jpg', title: 'Subject 9' },
-  ];
+  // Captions live in works.json — edit them there, or use admin.html.
+  let works = [];
 
   const roman = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
-
-  // --- Build the grid ---
   const gallery = document.getElementById('gallery');
-  works.forEach((w, i) => {
-    const fig = document.createElement('figure');
-    fig.className = 'work';
-    fig.innerHTML = `
-      <div class="frame"><img src="${w.src}" alt="${w.title}" loading="lazy"></div>
-      <figcaption>
-        <span class="title">${w.title}</span>
-        <span class="num">No. ${roman[i] || i + 1}</span>
-      </figcaption>`;
-    fig.addEventListener('click', () => openLightbox(i));
-    gallery.appendChild(fig);
-  });
 
-  // --- Fade in on scroll ---
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
@@ -332,7 +305,39 @@
       }
     });
   }, { threshold: 0.12 });
-  document.querySelectorAll('.work').forEach(f => observer.observe(f));
+
+  function buildGallery() {
+    works.forEach((w, i) => {
+      const fig = document.createElement('figure');
+      fig.className = 'work';
+      const img = document.createElement('img');
+      img.src = w.src;
+      img.alt = w.title;
+      img.loading = 'lazy';
+      const frame = document.createElement('div');
+      frame.className = 'frame';
+      frame.appendChild(img);
+      const cap = document.createElement('figcaption');
+      const t = document.createElement('span');
+      t.className = 'title';
+      t.textContent = w.title;
+      const n = document.createElement('span');
+      n.className = 'num';
+      n.textContent = 'No. ' + (roman[i] || i + 1);
+      cap.append(t, n);
+      fig.append(frame, cap);
+      fig.addEventListener('click', () => openLightbox(i));
+      gallery.appendChild(fig);
+      observer.observe(fig);
+    });
+  }
+
+  fetch('works.json?v=' + Date.now())
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(data => { works = data; buildGallery(); })
+    .catch(() => {
+      gallery.innerHTML = '<p style="text-align:center;color:var(--ink-soft)">Could not load the collection. If you opened this file directly, serve it over http instead (see README).</p>';
+    });
 
   // --- Lightbox ---
   const lightbox = document.getElementById('lightbox');
