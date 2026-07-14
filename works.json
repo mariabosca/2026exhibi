@@ -1,0 +1,38 @@
+[
+  {
+    "src": "images/subject-1.jpg",
+    "title": "Prova modifica"
+  },
+  {
+    "src": "images/subject-2.jpg",
+    "title": "Subject 2"
+  },
+  {
+    "src": "images/subject-3.jpg",
+    "title": "Subject 3"
+  },
+  {
+    "src": "images/subject-4.jpg",
+    "title": "Subject 4"
+  },
+  {
+    "src": "images/subject-5.jpg",
+    "title": "Subject 5"
+  },
+  {
+    "src": "images/subject-6.jpg",
+    "title": "Subject 6"
+  },
+  {
+    "src": "images/subject-7.jpg",
+    "title": "Subject 7"
+  },
+  {
+    "src": "images/subject-8.jpg",
+    "title": "Subject 8"
+  },
+  {
+    "src": "images/subject-9.jpg",
+    "title": "Subject 9"
+  }
+]
