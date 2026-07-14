@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summer Art Residency 2026 — Gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #faf7f0;
+    --paper-deep: #f3eee3;
+    --ink: #2b2620;
+    --ink-soft: #6f665a;
+    --accent: #c0392b;
+    --line: #e0d8c8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Jost', 'Helvetica Neue', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    text-align: center;
+    padding: clamp(3.5rem, 9vw, 7rem) 1.5rem clamp(2.5rem, 6vw, 4.5rem);
+  }
+
+  .eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.4rem;
+  }
+
+  h1 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(2.4rem, 6.5vw, 4.6rem);
+    line-height: 1.08;
+    letter-spacing: 0.01em;
+  }
+
+  h1 em {
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .subtitle {
+    margin-top: 1.2rem;
+    color: var(--ink-soft);
+    font-size: clamp(0.9rem, 1.6vw, 1.05rem);
+    letter-spacing: 0.06em;
+  }
+
+  .rule {
+    width: 52px;
+    height: 1px;
+    background: var(--accent);
+    margin: 2.2rem auto 0;
+    opacity: 0.7;
+  }
+
+  /* ---------- Gallery grid ---------- */
+  .gallery {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 clamp(1.2rem, 4vw, 3rem) 5rem;
+    columns: 3 300px;
+    column-gap: 2.2rem;
+  }
+
+  figure.work {
+    break-inside: avoid;
+    margin-bottom: 2.6rem;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+
+  figure.work.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Exhibition frame: wood moulding + gold fillet + white mat */
+  .frame {
+    background: #fff;                                   /* the mat */
+    padding: clamp(1.1rem, 2.4vw, 1.9rem);
+    border: clamp(11px, 1.4vw, 16px) solid transparent;
+    border-image: linear-gradient(140deg, #5c4c3a 0%, #3a2e21 42%, #55462f 70%, #6b5a42 100%) 1;
+    box-shadow:
+      inset 0 0 0 2px #c9ac72,                          /* gold fillet */
+      0 1px 2px rgba(43, 38, 32, 0.10),
+      0 14px 36px rgba(43, 38, 32, 0.16);
+    transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.45s ease;
+  }
+
+  figure.work:hover .frame {
+    transform: translateY(-6px);
+    box-shadow:
+      inset 0 0 0 2px #c9ac72,
+      0 2px 4px rgba(43, 38, 32, 0.10),
+      0 26px 54px rgba(43, 38, 32, 0.22);
+  }
+
+  .frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: #fff;
+  }
+
+  figcaption {
+    text-align: center;
+    margin-top: 1.05rem;
+  }
+
+  figcaption .title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: 1.35rem;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  figcaption .num {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  /* ---------- Footer ---------- */
+  footer {
+    border-top: 1px solid var(--line);
+    text-align: center;
+    padding: 2.6rem 1.5rem 3.2rem;
+    color: var(--ink-soft);
+    font-size: 0.82rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  /* ---------- Lightbox ---------- */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(24, 21, 17, 0.94);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.35s ease, visibility 0.35s;
+  }
+
+  .lightbox.open { opacity: 1; visibility: visible; }
+
+  .lb-stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: min(92vw, 1100px);
+  }
+
+  .lb-img-wrap {
+    background: #fff;                                   /* the mat */
+    padding: clamp(0.9rem, 2vw, 1.6rem);
+    border: clamp(10px, 1.3vw, 15px) solid transparent;
+    border-image: linear-gradient(140deg, #5c4c3a 0%, #3a2e21 42%, #55462f 70%, #6b5a42 100%) 1;
+    box-shadow:
+      inset 0 0 0 2px #c9ac72,
+      0 30px 80px rgba(0, 0, 0, 0.5);
+  }
+
+  .lb-img-wrap img {
+    display: block;
+    max-width: min(86vw, 980px);
+    max-height: 72vh;
+    width: auto;
+    height: auto;
+    background: #fff;
+  }
+
+  .lb-caption {
+    margin-top: 1.4rem;
+    text-align: center;
+    color: #f3eee3;
+  }
+
+  .lb-caption .title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+  }
+
+  .lb-caption .counter {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.35em;
+    color: rgba(243, 238, 227, 0.55);
+  }
+
+  .lb-btn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 110;
+    background: rgba(24, 21, 17, 0.55);
+    border: 1px solid rgba(243, 238, 227, 0.35);
+    color: #f3eee3;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    font-size: 1.3rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.25s ease, border-color 0.25s ease;
+  }
+
+  .lb-btn:hover { background: rgba(24, 21, 17, 0.85); border-color: rgba(243, 238, 227, 0.7); }
+  .lb-prev { left: clamp(0.6rem, 3vw, 2.5rem); }
+  .lb-next { right: clamp(0.6rem, 3vw, 2.5rem); }
+
+  .lb-close {
+    position: fixed;
+    top: 1.4rem;
+    right: 1.6rem;
+    z-index: 110;
+    background: none;
+    border: none;
+    color: rgba(243, 238, 227, 0.7);
+    font-size: 2.1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.25s ease, transform 0.25s ease;
+  }
+
+  .lb-close:hover { color: #fff; transform: rotate(90deg); }
+
+  @media (max-width: 640px) {
+    .lb-btn { width: 44px; height: 44px; font-size: 1.1rem; }
+    .lb-img-wrap img { max-width: 88vw; max-height: 64vh; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">Summer Art Residency · 2026</p>
+  <h1>Works on <em>Paper</em></h1>
+  <p class="subtitle">Nine hand-drawn studies from the first days of the residency</p>
+  <div class="rule"></div>
+</header>
+
+<main class="gallery" id="gallery"></main>
+
+<footer>Summer Art Residency 2026</footer>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Artwork viewer">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <button class="lb-btn lb-prev" id="lbPrev" aria-label="Previous artwork">&#8592;</button>
+  <div class="lb-stage">
+    <div class="lb-img-wrap"><img id="lbImg" src="" alt=""></div>
+    <div class="lb-caption">
+      <span class="title" id="lbTitle"></span>
+      <span class="counter" id="lbCounter"></span>
+    </div>
+  </div>
+  <button class="lb-btn lb-next" id="lbNext" aria-label="Next artwork">&#8594;</button>
+</div>
+
+<script>
+  // ------------------------------------------------------------------
+  // EDIT YOUR TITLES HERE — one entry per artwork, in display order.
+  // ------------------------------------------------------------------
+  const works = [
+    { src: 'images/subject-1.jpg', title: 'Subject 1' },
+    { src: 'images/subject-2.jpg', title: 'Subject 2' },
+    { src: 'images/subject-3.jpg', title: 'Subject 3' },
+    { src: 'images/subject-4.jpg', title: 'Subject 4' },
+    { src: 'images/subject-5.jpg', title: 'Subject 5' },
+    { src: 'images/subject-6.jpg', title: 'Subject 6' },
+    { src: 'images/subject-7.jpg', title: 'Subject 7' },
+    { src: 'images/subject-8.jpg', title: 'Subject 8' },
+    { src: 'images/subject-9.jpg', title: 'Subject 9' },
+  ];
+
+  const roman = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+
+  // --- Build the grid ---
+  const gallery = document.getElementById('gallery');
+  works.forEach((w, i) => {
+    const fig = document.createElement('figure');
+    fig.className = 'work';
+    fig.innerHTML = `
+      <div class="frame"><img src="${w.src}" alt="${w.title}" loading="lazy"></div>
+      <figcaption>
+        <span class="title">${w.title}</span>
+        <span class="num">No. ${roman[i] || i + 1}</span>
+      </figcaption>`;
+    fig.addEventListener('click', () => openLightbox(i));
+    gallery.appendChild(fig);
+  });
+
+  // --- Fade in on scroll ---
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.work').forEach(f => observer.observe(f));
+
+  // --- Lightbox ---
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbTitle = document.getElementById('lbTitle');
+  const lbCounter = document.getElementById('lbCounter');
+  let current = 0;
+
+  function openLightbox(i) {
+    current = i;
+    render();
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function render() {
+    const w = works[current];
+    lbImg.src = w.src;
+    lbImg.alt = w.title;
+    lbTitle.textContent = w.title;
+    lbCounter.textContent = `${current + 1} / ${works.length}`;
+  }
+
+  function step(dir) {
+    current = (current + dir + works.length) % works.length;
+    render();
+  }
+
+  document.getElementById('lbPrev').addEventListener('click', e => { e.stopPropagation(); step(-1); });
+  document.getElementById('lbNext').addEventListener('click', e => { e.stopPropagation(); step(1); });
+  document.getElementById('lbClose').addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+
+  document.addEventListener('keydown', e => {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'ArrowLeft') step(-1);
+    if (e.key === 'ArrowRight') step(1);
+    if (e.key === 'Escape') closeLightbox();
+  });
+
+  // --- Touch swipe in lightbox ---
+  let touchX = null;
+  lightbox.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+  lightbox.addEventListener('touchend', e => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
+    touchX = null;
+  }, { passive: true });
+</script>
+
+</body>
+</html>

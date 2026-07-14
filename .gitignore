@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# Original high-resolution artwork (kept local only — the site uses images/)
+artimages/
+Summer art residency 2026_Primi 10 giorni.png
+
+# Local tooling
+.claude/
