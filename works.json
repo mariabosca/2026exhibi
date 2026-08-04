@@ -72,22 +72,6 @@
     "title": "Mi sono divertita"
   },
   {
-    "src": "images/shopping-is-not-bad.jpg",
-    "title": "Shopping is not bad"
-  },
-  {
-    "src": "images/it-s-time-to-start-handlettering.jpg",
-    "title": "It's time to start handlettering"
-  },
-  {
-    "src": "images/shopping-is-good-for-the-soul.jpg",
-    "title": "Shopping is good for the soul"
-  },
-  {
-    "src": "images/enjoy-the-little-things.jpg",
-    "title": "Enjoy the little things"
-  },
-  {
     "src": "images/treat-yourself-with-flowers.jpg",
     "title": "Treat yourself with flowers"
   },
@@ -96,20 +80,8 @@
     "title": "I fiori dell'alpeggio"
   },
   {
-    "src": "images/something-folkish.jpg",
-    "title": "Something folkish"
-  },
-  {
-    "src": "images/gallina-a-chi.jpg",
-    "title": "Gallina a chi?"
-  },
-  {
     "src": "images/where-i-am-going-to.jpg",
     "title": "Where I am going to"
-  },
-  {
-    "src": "images/time-is-running-out.jpg",
-    "title": "Time is running out"
   },
   {
     "src": "images/sghembo-e-bello.jpg",
@@ -118,5 +90,9 @@
   {
     "src": "images/the-final-act.jpg",
     "title": "The final act"
+  },
+  {
+    "src": "images/the-clock-is-ticking.jpg",
+    "title": "The clock is ticking"
   }
 ]
